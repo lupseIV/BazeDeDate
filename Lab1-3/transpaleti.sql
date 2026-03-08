@@ -13,7 +13,7 @@ CREATE TABLE "PalletTruckDetails" (
                                       "truck_id" BIGINT PRIMARY KEY,
                                       "wheels_id" BIGINT NOT NULL,
                                       "purchase_date" DATE NOT NULL,
-                                      "notes" TEXT,
+                                      "notes" varchar(max),
                                       "manufacturer" VARCHAR(255) NOT NULL,
                                       FOREIGN KEY ("truck_id") REFERENCES "PalletTrucks"("truck_id") ON DELETE CASCADE
 );
@@ -33,7 +33,7 @@ CREATE TABLE "Wheels" (
 -- 4. Bearings
 CREATE TABLE "Bearings" (
                             "bid" BIGINT PRIMARY KEY,
-                            "diametre" BIGINT NOT NULL,
+                            "diameter" BIGINT NOT NULL,
                             "mid" BIGINT
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE "Customers" (
                              "contact_name" VARCHAR(255) NOT NULL,
                              "phone" VARCHAR(255) NOT NULL,
                              "email" VARCHAR(255) NOT NULL,
-                             "address" TEXT NOT NULL
+                             "address" varchar(max) NOT NULL
 );
 
 
@@ -94,11 +94,11 @@ CREATE TABLE "MaintenanceRecords" (
                                       "record_id" BIGINT PRIMARY KEY,
                                       "truck_id" BIGINT NOT NULL,
                                       "service_date" DATE NOT NULL,
-                                      "description" TEXT,
+                                      "description" VARCHAR(max),
                                       "cost" DECIMAL(10, 2),
-                                      "technician_id" BIGINT,
+                                      "employee_id" BIGINT,
                                       FOREIGN KEY ("truck_id") REFERENCES "PalletTrucks"("truck_id"),
-                                      FOREIGN KEY ("technician_id") REFERENCES "Employees"("employee_id")
+                                      FOREIGN KEY ("employee_id") REFERENCES "Employees"("employee_id")
 );
 
 -- 11. Suppliers
@@ -108,7 +108,7 @@ CREATE TABLE "Suppliers" (
                              "contact_name" VARCHAR(255) NOT NULL,
                              "phone" VARCHAR(255) NOT NULL,
                              "email" VARCHAR(255) NOT NULL,
-                             "address" TEXT NOT NULL
+                             "address" varchar(max) NOT NULL
 );
 
 -- 12. Parts Inventory
