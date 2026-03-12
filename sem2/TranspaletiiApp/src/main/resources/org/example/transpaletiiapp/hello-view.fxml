@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10.0"
+      xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="org.example.transpaletiiapp.gui.controllers.MainController"
+      prefWidth="1100.0" prefHeight="780.0">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <!-- ==================== PARENT SECTION: Wheels ==================== -->
+    <Label text="Wheels (Parent)" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <!-- Search / filter bar + Refresh for parent -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Search:"/>
+        <TextField fx:id="wheelSearchField" promptText="Filter by material, max weight..." prefWidth="300.0"/>
+        <Button text="Refresh" onAction="#onRefreshWheels"/>
+    </HBox>
+
+    <TableView fx:id="wheelsTable" prefHeight="200.0">
+        <columns>
+            <TableColumn fx:id="wheelIdCol" text="Wheel ID" prefWidth="280.0"/>
+            <TableColumn fx:id="wheelMaterialCol" text="Material" prefWidth="160.0"/>
+            <TableColumn fx:id="wheelMaxWeightCol" text="Max Weight (kg)" prefWidth="130.0"/>
+            <TableColumn fx:id="wheelBearingDiamCol" text="Bearing Diameter" prefWidth="130.0"/>
+        </columns>
+    </TableView>
+
+    <!-- Parent (Wheel) CRUD form -->
+    <TitledPane text="Add / Edit Wheel" expanded="false">
+        <VBox spacing="8.0">
+            <padding><Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/></padding>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Material:" prefWidth="80.0"/>
+                <ComboBox fx:id="wheelMaterialCombo" prefWidth="200.0"/>
+                <Label text="Bearing:" prefWidth="60.0"/>
+                <ComboBox fx:id="wheelBearingCombo" prefWidth="200.0"/>
+                <Label text="Max Weight:" prefWidth="80.0"/>
+                <TextField fx:id="wheelMaxWeightField" prefWidth="100.0" promptText="e.g. 1200"/>
+            </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Add Wheel" onAction="#onAddWheel"/>
+                <Button text="Update Wheel" onAction="#onUpdateWheel"/>
+                <Button text="Delete Wheel" onAction="#onDeleteWheel"/>
+                <Button text="Clear Fields" onAction="#onClearWheelFields"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <Separator/>
+
+    <!-- ==================== CHILD SECTION: Pallet Trucks ==================== -->
+    <Label text="Pallet Trucks (Child – for selected Wheel)" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <!-- Search / filter bar + Refresh for child -->
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Search:"/>
+        <TextField fx:id="truckSearchField" promptText="Filter by serial, type, model..." prefWidth="300.0"/>
+        <Button text="Refresh" onAction="#onRefreshTrucks"/>
+    </HBox>
+
+    <TableView fx:id="palletTrucksTable" prefHeight="180.0">
+        <columns>
+            <TableColumn fx:id="truckSerialCol" text="Serial Number" prefWidth="150.0"/>
+            <TableColumn fx:id="truckTypeCol" text="Type" prefWidth="100.0"/>
+            <TableColumn fx:id="truckModelCol" text="Model" prefWidth="140.0"/>
+            <TableColumn fx:id="truckCapacityCol" text="Capacity (kg)" prefWidth="120.0"/>
+            <TableColumn fx:id="truckStatusCol" text="Status" prefWidth="130.0"/>
+        </columns>
+    </TableView>
+
+    <!-- Child (PalletTruck) CRUD form -->
+    <TitledPane text="Add / Edit Pallet Truck" expanded="false">
+        <VBox spacing="8.0">
+            <padding><Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/></padding>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Serial No:" prefWidth="80.0"/>
+                <TextField fx:id="truckSerialField" prefWidth="150.0"/>
+                <Label text="Type:" prefWidth="40.0"/>
+                <ComboBox fx:id="truckTypeCombo" prefWidth="120.0"/>
+                <Label text="Model:" prefWidth="50.0"/>
+                <TextField fx:id="truckModelField" prefWidth="150.0"/>
+            </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Capacity:" prefWidth="80.0"/>
+                <TextField fx:id="truckCapacityField" prefWidth="100.0" promptText="e.g. 2500"/>
+                <Label text="Status:" prefWidth="50.0"/>
+                <ComboBox fx:id="truckStatusCombo" prefWidth="140.0"/>
+            </HBox>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Button text="Add Truck" onAction="#onAddTruck"/>
+                <Button text="Update Truck" onAction="#onUpdateTruck"/>
+                <Button text="Delete Truck" onAction="#onDeleteTruck"/>
+                <Button text="Clear Fields" onAction="#onClearTruckFields"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <!-- Status bar -->
+    <Label fx:id="statusLabel" text="Ready." style="-fx-text-fill: gray;"/>
+</VBox>
