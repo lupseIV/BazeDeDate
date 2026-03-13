@@ -41,4 +41,10 @@ public class WheelMaterial implements Identifiable<UUID> {
     public void setMaxWeight(Long maxWeight) {
         this.maxWeight = maxWeight;
     }
+
+    @Override
+    public String toString() {
+        return
+                type + '('+ maxWeight+')';
+    }
 }

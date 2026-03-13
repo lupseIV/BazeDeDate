@@ -29,13 +29,12 @@ import java.util.stream.Collectors;
  */
 public class MainController {
 
-    // ======================== Services (injected by TranspaletiiApp) ========================
     private PalletTrucksService palletTrucksService;
     private WheelsService wheelsService;
     private BearingsService bearingsService;
     private WheelMaterialsService wheelMaterialsService;
 
-    // ======================== Parent (Wheel) table & columns ========================
+    // Parent (Wheel) table & columns
     @FXML private TableView<Wheel> wheelsTable;
     @FXML private TableColumn<Wheel, String> wheelIdCol;
     @FXML private TableColumn<Wheel, String> wheelMaterialCol;
@@ -48,7 +47,7 @@ public class MainController {
     @FXML private TextField wheelMaxWeightField;
     @FXML private TextField wheelSearchField;
 
-    // ======================== Child (PalletTruck) table & columns ========================
+    // Child (PalletTruck) table & columns
     @FXML private TableView<PalletTruck> palletTrucksTable;
     @FXML private TableColumn<PalletTruck, String> truckSerialCol;
     @FXML private TableColumn<PalletTruck, String> truckTypeCol;
@@ -64,22 +63,15 @@ public class MainController {
     @FXML private ComboBox<String> truckStatusCombo;
     @FXML private TextField truckSearchField;
 
-    // Status label
     @FXML private Label statusLabel;
 
-    // Observable lists backing the tables
     private final ObservableList<Wheel> wheelData = FXCollections.observableArrayList();
     private final ObservableList<PalletTruck> truckData = FXCollections.observableArrayList();
 
-    // All trucks cached for filtering by parent
     private List<PalletTruck> allTrucks = List.of();
 
-    // Currently selected parent wheel
     private Wheel selectedWheel = null;
 
-    /**
-     * Called by TranspaletiiApp after FXML load to inject service dependencies.
-     */
     public void setServices(PalletTrucksService palletTrucksService,
                             WheelsService wheelsService,
                             BearingsService bearingsService,
@@ -89,7 +81,6 @@ public class MainController {
         this.bearingsService = bearingsService;
         this.wheelMaterialsService = wheelMaterialsService;
 
-        // now that services are available, populate everything
         loadComboBoxes();
         loadWheels();
         loadAllTrucksCache();
@@ -332,8 +323,8 @@ public class MainController {
         }
         try {
             PalletTruck truck = buildTruckFromForm();
-            truck.setId(null); // force new insert
-            truck.setWheel(selectedWheel); // assign the selected parent wheel
+            truck.setId(null);
+            truck.setWheel(selectedWheel);
             palletTrucksService.save(truck);
             loadAllTrucksCache();
             loadTrucksForSelectedWheel();
@@ -359,7 +350,7 @@ public class MainController {
         try {
             PalletTruck truck = buildTruckFromForm();
             truck.setId(selectedTruck.getId());
-            truck.setWheel(selectedWheel); // keep assigned to current parent wheel
+            truck.setWheel(selectedWheel);
             palletTrucksService.save(truck);
             loadAllTrucksCache();
             loadTrucksForSelectedWheel();
@@ -553,6 +544,7 @@ public class MainController {
             }
         };
     }
+
 
     // --- Dialogs ---
 

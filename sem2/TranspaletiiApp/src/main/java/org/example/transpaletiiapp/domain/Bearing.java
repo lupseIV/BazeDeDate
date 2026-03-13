@@ -42,4 +42,11 @@ public class Bearing implements Identifiable<UUID>{
     public void setMid(Long mid) {
         this.mid = mid;
     }
+
+    @Override
+    public String toString() {
+        return
+                "Diameter=" + Diameter +
+                " mm";
+    }
 }
