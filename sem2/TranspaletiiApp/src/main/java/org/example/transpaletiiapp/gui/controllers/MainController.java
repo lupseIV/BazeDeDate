@@ -492,7 +492,6 @@ public class MainController {
             return matType.contains(filter) || weight.contains(filter);
         });
 
-        // wrap in SortedList so column sorting still works (bonus)
         SortedList<Wheel> sorted = new SortedList<>(filtered);
         sorted.comparatorProperty().bind(wheelsTable.comparatorProperty());
         wheelsTable.setItems(sorted);
