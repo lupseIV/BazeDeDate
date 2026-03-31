@@ -276,7 +276,7 @@ public class MainController {
         }
         if (!confirmAction("Delete Wheel",
                 "Are you sure you want to delete this wheel?\n" +
-                        "All pallet trucks referencing it must be removed first.")) {
+                        "All pallet trucks referencing it will also be deleted (cascade).")) {
             return;
         }
         try {
@@ -285,10 +285,10 @@ public class MainController {
             loadWheels();
             loadAllTrucksCache();
             onClearWheelFields();
-            statusLabel.setText("Wheel deleted successfully.");
+            statusLabel.setText("Wheel deleted successfully (with its pallet trucks).");
         } catch (Exception e) {
             showError("Error deleting wheel",
-                    e.getMessage() + "\nHint: pallet trucks may still reference this wheel (FK constraint).");
+                    e.getMessage());
         }
     }
 
