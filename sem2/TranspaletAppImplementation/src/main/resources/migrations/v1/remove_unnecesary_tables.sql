@@ -1,6 +1,5 @@
 drop TABLE "Rentals"
 drop TABLE "Invoices"
-drop TABLE "Employees"
 drop TABLE "MaintenanceRecords"
 drop TABLE "Suppliers"
 drop TABLE "PartsInventory"

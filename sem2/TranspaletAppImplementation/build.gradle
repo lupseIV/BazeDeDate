@@ -17,8 +17,8 @@ javafx {
 }
 
 dependencies {
-    implementation 'com.microsoft.sqlserver:mssql-jdbc:13.3.2.jre11-preview' // Or latest version
-
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:13.3.2.jre11-preview'
+    implementation 'org.knowm.xchart:xchart:3.8.3'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc_auth:12.6.1.x64'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
