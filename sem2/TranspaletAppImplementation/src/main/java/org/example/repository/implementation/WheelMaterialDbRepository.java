@@ -12,11 +12,6 @@ import java.util.*;
 
 public class WheelMaterialDbRepository implements WheelMaterialRepository {
 
-    private final JdbcUtils dbUtils;
-
-    public WheelMaterialDbRepository(Properties props) {
-        this.dbUtils = new JdbcUtils(props);
-    }
 
     @Override
     public WheelMaterial save(WheelMaterial entity) {
@@ -29,7 +24,9 @@ public class WheelMaterialDbRepository implements WheelMaterialRepository {
         }
 
         String sql = "INSERT INTO WheelMaterials (materials_id, type, max_weight) VALUES (?, ?, ?)";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getId().toString());
@@ -45,7 +42,9 @@ public class WheelMaterialDbRepository implements WheelMaterialRepository {
 
     private WheelMaterial update(WheelMaterial entity) {
         String sql = "UPDATE WheelMaterials SET type = ?, max_weight = ? WHERE materials_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getType());
@@ -62,7 +61,9 @@ public class WheelMaterialDbRepository implements WheelMaterialRepository {
     @Override
     public Optional<WheelMaterial> findById(UUID uuid) {
         String sql = "SELECT * FROM WheelMaterials WHERE materials_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());
@@ -81,7 +82,9 @@ public class WheelMaterialDbRepository implements WheelMaterialRepository {
     public List<WheelMaterial> findAll() {
         String sql = "SELECT * FROM WheelMaterials";
         List<WheelMaterial> materials = new ArrayList<>();
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+
+        try (
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -97,7 +100,9 @@ public class WheelMaterialDbRepository implements WheelMaterialRepository {
     @Override
     public void deleteById(UUID uuid) {
         String sql = "DELETE FROM WheelMaterials WHERE materials_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());

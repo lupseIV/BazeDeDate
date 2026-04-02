@@ -3,6 +3,7 @@ import org.example.domain.PalletTruck;
 import org.example.domain.Wheel;
 import org.example.domain.exceptions.RepositoryException;
 import org.example.repository.PalletTruckRepository;
+import org.example.repository.WheelsRepository;
 import org.example.repository.utils.JdbcUtils;
 
 import java.sql.Connection;
@@ -13,10 +14,10 @@ import java.util.*;
 
 public class PalletTruckDbRepository implements PalletTruckRepository {
 
-    private final JdbcUtils dbUtils;
+    private final WheelsRepository wheelRepo;
 
-    public PalletTruckDbRepository(Properties props) {
-        this.dbUtils = new JdbcUtils(props);
+    public PalletTruckDbRepository(WheelsRepository wheelRepo) {
+        this.wheelRepo = wheelRepo;
     }
 
     @Override
@@ -31,7 +32,8 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
 
         String sql = "INSERT INTO PalletTrucks (truck_id, serial_number, type, model, capacity_kg, status, wheels_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getId().toString());
@@ -52,7 +54,8 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
     private PalletTruck update(PalletTruck entity) {
         String sql = "UPDATE PalletTrucks SET serial_number = ?, type = ?, model = ?, capacity_kg = ?, status = ?, wheels_id = ? " +
                 "WHERE truck_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getSerialNumber());
@@ -73,7 +76,8 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
     @Override
     public Optional<PalletTruck> findById(UUID uuid) {
         String sql = "SELECT * FROM PalletTrucks WHERE truck_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());
@@ -92,7 +96,8 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
     public List<PalletTruck> findAll() {
         String sql = "SELECT * FROM PalletTrucks";
         List<PalletTruck> trucks = new ArrayList<>();
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -108,7 +113,8 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
     @Override
     public void deleteById(UUID uuid) {
         String sql = "DELETE FROM PalletTrucks WHERE truck_id = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());
@@ -131,7 +137,7 @@ public class PalletTruckDbRepository implements PalletTruckRepository {
     }
 
     private Wheel getWheel(UUID wheelId){
-        WheelDbRepository wheelRepo = new WheelDbRepository(dbUtils.getJdbcProps());
+
         var wheelOp = wheelRepo.findById(wheelId);
         if(wheelOp.isPresent()){
             return wheelOp.get();

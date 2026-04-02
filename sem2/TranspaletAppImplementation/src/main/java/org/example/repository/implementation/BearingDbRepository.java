@@ -12,13 +12,6 @@ import java.util.*;
 
 public class BearingDbRepository implements BearingRepository {
 
-    private final JdbcUtils dbUtils;
-
-    public BearingDbRepository(Properties props) {
-        this.dbUtils = new JdbcUtils(props);
-
-    }
-
     @Override
     public Bearing save(Bearing entity) {
         if (entity.getId() == null) {
@@ -28,9 +21,9 @@ public class BearingDbRepository implements BearingRepository {
         if (findById(entity.getId()).isPresent()) {
             return update(entity);
         }
-
+        Connection con = JdbcUtils.getConnection();
         String sql = "INSERT INTO Bearings (bid, diameter, mid) VALUES (?, ?, ?)";
-        try (Connection con = dbUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getId().toString());
@@ -51,7 +44,8 @@ public class BearingDbRepository implements BearingRepository {
 
     private Bearing update(Bearing entity) {
         String sql = "UPDATE Bearings SET diameter = ?, mid = ? WHERE bid = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setLong(1, entity.getDiameter());
@@ -72,7 +66,8 @@ public class BearingDbRepository implements BearingRepository {
     @Override
     public Optional<Bearing> findById(UUID uuid) {
         String sql = "SELECT * FROM Bearings WHERE bid = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());
@@ -91,7 +86,8 @@ public class BearingDbRepository implements BearingRepository {
     public List<Bearing> findAll() {
         String sql = "SELECT * FROM Bearings";
         List<Bearing> bearings = new ArrayList<>();
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -107,7 +103,8 @@ public class BearingDbRepository implements BearingRepository {
     @Override
     public void deleteById(UUID uuid) {
         String sql = "DELETE FROM Bearings WHERE bid = ?";
-        try (Connection con = dbUtils.getConnection();
+        Connection con = JdbcUtils.getConnection();
+        try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, uuid.toString());

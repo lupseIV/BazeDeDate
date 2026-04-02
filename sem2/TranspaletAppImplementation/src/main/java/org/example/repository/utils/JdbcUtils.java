@@ -1,22 +1,39 @@
 package org.example.repository.utils;
 
+import org.example.TranspaletiiApp;
+
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Properties;
 
 public class JdbcUtils {
 
-    private Properties jdbcProps;
+    private static Properties jdbcProps = null;
+    private static Connection conn = null;
 
-    public JdbcUtils(Properties props){
-        jdbcProps = props;
+    private JdbcUtils(){
     }
 
-    // We removed the 'private Connection instance' variable!
-    // Every repository method gets its own isolated connection so they don't close each other's.
+    private static void initAppConfig() {
+        jdbcProps = new Properties();
+        try (InputStream is = TranspaletiiApp.class.getResourceAsStream("/config/db.config")) {
+            if (is == null) {
+                throw new RuntimeException("Cannot find db.config in the resources folder!");
+            }
+            jdbcProps.load(is);
+            System.out.println("Properties loaded successfully!");
+        } catch (Exception e) {
+            System.out.println("Error loading config: " + e.getMessage());
+        }
+    }
 
-    public Connection getConnection(){
+    private static Connection createConnection(){
+        if(Objects.isNull(jdbcProps)){
+            initAppConfig();
+        }
         String url = jdbcProps.getProperty("jdbc.url");
         String user = jdbcProps.getProperty("jdbc.username");
         String pass = jdbcProps.getProperty("jdbc.password");
@@ -32,7 +49,20 @@ public class JdbcUtils {
         }
     }
 
-    public Properties getJdbcProps() {
-        return jdbcProps;
+    public static Connection getConnection(){
+        if (conn == null){
+            return createConnection();
+        }
+        return conn;
+    }
+
+    public static void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Error closing database connection", e);
+            }
+        }
     }
 }
