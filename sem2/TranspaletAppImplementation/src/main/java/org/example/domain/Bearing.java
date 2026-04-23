@@ -1,11 +1,23 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name = "Bearings")
+@Cacheable
 public class Bearing implements Identifiable<UUID>{
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "bid", updatable = false, nullable = false)
     private UUID id;
-    private Long Diameter;
+
+    @Column(name = "diameter", nullable = false)
+    private Long diameter;
+
+    @Column(name = "mid", nullable = false)
     private Long mid;
 
     public Bearing() {
@@ -13,7 +25,7 @@ public class Bearing implements Identifiable<UUID>{
 
     public Bearing(UUID id, Long diameter, Long mid) {
         this.id = id;
-        Diameter = diameter;
+        this.diameter = diameter;
         this.mid = mid;
     }
 
@@ -28,11 +40,11 @@ public class Bearing implements Identifiable<UUID>{
     }
 
     public Long getDiameter() {
-        return Diameter;
+        return diameter;
     }
 
     public void setDiameter(Long diameter) {
-        Diameter = diameter;
+        diameter = diameter;
     }
 
     public Long getMid() {

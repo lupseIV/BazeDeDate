@@ -1,19 +1,30 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class PalletTruckDetails implements Identifiable<UUID>{
-
-    private UUID id;
+@Entity
+@Table(name = "PalletTruckDetails")
+@Cacheable
+public class PalletTruckDetails{
+    @Id
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "truck_id", nullable = false)
     private PalletTruck truck;
+
+    @Column(name = "purchase_date", nullable = false)
     private LocalDate purchaseDate;
+
+    @Column(name = "notes")
     private String notes;
+
+    @Column(name = "manufacturer", nullable = false)
     private String manufacturer;
 
 
-    public PalletTruckDetails(UUID id, PalletTruck truck, LocalDate purchaseDate, String notes, String manufacturer) {
-        this.id = id;
+    public PalletTruckDetails(PalletTruck truck, LocalDate purchaseDate, String notes, String manufacturer) {
         this.truck = truck;
         this.purchaseDate = purchaseDate;
         this.notes = notes;
@@ -23,15 +34,6 @@ public class PalletTruckDetails implements Identifiable<UUID>{
     public PalletTruckDetails() {
     }
 
-    @Override
-    public UUID getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public PalletTruck getTruck() {
         return truck;

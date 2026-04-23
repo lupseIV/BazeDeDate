@@ -1,5 +1,7 @@
 package org.example.repository.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.example.TranspaletiiApp;
 
 import java.io.InputStream;
@@ -30,10 +32,12 @@ public class JdbcUtils {
         }
     }
 
+
     private static Connection createConnection(){
         if(Objects.isNull(jdbcProps)){
             initAppConfig();
         }
+
         String url = jdbcProps.getProperty("jdbc.url");
         String user = jdbcProps.getProperty("jdbc.username");
         String pass = jdbcProps.getProperty("jdbc.password");

@@ -1,12 +1,27 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name = "Wheels")
 public class Wheel implements Identifiable<UUID> {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "wheels_id", updatable = false, nullable = false)
     private UUID id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "materials_id", nullable = false)
     private WheelMaterial material;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bid", nullable = false)
     private Bearing bearing;
+
+    @Column(name = "max_weight", nullable = false)
     private Long maxWeight;
 
     public Wheel(UUID id, WheelMaterial material, Bearing bearing, Long maxWeight) {

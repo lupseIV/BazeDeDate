@@ -119,7 +119,7 @@ public class BearingDbRepository implements BearingRepository {
         Long diameter = rs.getLong("diameter");
 
         long midVal = rs.getLong("mid");
-        Long mid = rs.wasNull() ? null : midVal; // Handles nullable mid
+        Long mid = rs.wasNull() ? null : midVal;
 
         Bearing bearing = new Bearing();
         bearing.setId(bid);

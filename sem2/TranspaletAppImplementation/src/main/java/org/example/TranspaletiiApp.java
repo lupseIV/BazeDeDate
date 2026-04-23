@@ -1,5 +1,7 @@
 package org.example;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,11 +17,12 @@ import org.example.repository.BearingRepository;
 import org.example.repository.PalletTruckRepository;
 import org.example.repository.WheelMaterialRepository;
 import org.example.repository.WheelsRepository;
-import org.example.repository.implementation.BearingDbRepository;
-import org.example.repository.implementation.PalletTruckDbRepository;
-import org.example.repository.implementation.WheelDbRepository;
-import org.example.repository.implementation.WheelMaterialDbRepository;
+import org.example.repository.jpa.BearingJpaRepository;
+import org.example.repository.jpa.PalletTruckJpaRepository;
+import org.example.repository.jpa.WheelJpaRepository;
+import org.example.repository.jpa.WheelMaterilJpaRepository;
 import org.example.repository.utils.JdbcUtils;
+import org.example.repository.utils.JpaUtils;
 import org.example.service.BearingsService;
 import org.example.service.PalletTrucksService;
 import org.example.service.WheelMaterialsService;
@@ -45,11 +48,13 @@ public class TranspaletiiApp extends Application {
         Validator<Bearing> bearingValidator = new BearingValidator();
         Validator<WheelMaterial> wheelMaterialValidator = new WheelMaterialValidator();
 
+        EntityManagerFactory factory = JpaUtils.getEntityManagerFactory();
+
         // repositories
-        WheelsRepository wheelsRepository = new WheelDbRepository();
-        PalletTruckRepository palletTruckRepository = new PalletTruckDbRepository(wheelsRepository);
-        BearingRepository bearingRepository = new BearingDbRepository();
-        WheelMaterialRepository wheelMaterialRepository = new WheelMaterialDbRepository();
+        WheelsRepository wheelsRepository = new WheelJpaRepository(factory);
+        PalletTruckRepository palletTruckRepository = new PalletTruckJpaRepository(factory);
+        BearingRepository bearingRepository = new BearingJpaRepository(factory);
+        WheelMaterialRepository wheelMaterialRepository = new WheelMaterilJpaRepository(factory);
 
         // services
         this.palletTrucksService = new PalletTrucksService(palletTruckRepository, palletTruckValidator);

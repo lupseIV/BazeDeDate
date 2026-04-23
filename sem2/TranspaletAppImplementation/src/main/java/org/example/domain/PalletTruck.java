@@ -1,15 +1,35 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name = "PalletTrucks")
 public class PalletTruck implements Identifiable<UUID>{
 
-    private String serialNumber;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "truck_id", updatable = false, nullable = false)
     private UUID id;
+
+    @Column(name = "serial_number", nullable = false, unique = true)
+    private String serialNumber;
+
+    @Column(name = "type", nullable = false)
     private String type;
+
+    @Column(name = "model", nullable = false)
     private String model;
+
+    @Column(name = "capacity_kg", nullable = false)
     private Long capacityKg;
+
+    @Column(name = "status", nullable = false)
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wheels_id", nullable = false)
     private Wheel wheel;
 
     public PalletTruck(String serialNumber, UUID id, String type, String model, Long capacityKg, String status, Wheel wheel) {

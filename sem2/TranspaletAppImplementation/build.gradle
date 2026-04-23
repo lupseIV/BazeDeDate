@@ -21,6 +21,17 @@ dependencies {
     implementation 'org.knowm.xchart:xchart:3.8.3'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc_auth:12.6.1.x64'
 
+    implementation("org.hibernate.orm:hibernate-core:6.4.10.Final")
+    implementation("org.hibernate:hibernate-hikaricp:5.2.10.Final")
+    implementation 'org.hibernate.orm:hibernate-jcache:6.4.4.Final'
+    implementation 'org.ehcache:ehcache:3.10.8'    // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-reload4j
+    implementation("org.slf4j:slf4j-reload4j:2.0.17")
+
+    implementation("com.zaxxer:HikariCP:7.0.0")
+
+    implementation("org.apache.logging.log4j:log4j-core:2.25.4")
+    implementation("org.apache.logging.log4j:log4j-api:2.25.4")
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
