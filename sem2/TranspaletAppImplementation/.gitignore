@@ -43,3 +43,4 @@ bin/
 .DS_Store
 /.idea/
 /performance_results.csv
+/Optimiations/lab4.txt

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="http://www.ehcache.org/v3 https://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
+    <!--
+        Hibernate requires this region for tracking entity update timestamps.
+        Must have no expiry so stale timestamp entries are never evicted.
+    -->
+    <cache alias="default-update-timestamps-region">
+        <expiry><none/></expiry>
+        <resources><heap unit="entries">5000</heap></resources>
+    </cache>
+
+    <!--
+        Department entity region.
+        TTL = 30 seconds  →  auto-eviction demo.
+        Max 50 entries   →  fits all 20 departments comfortably.
+    -->
+    <cache alias="org.example.Department">
+        <expiry><ttl unit="seconds">10</ttl></expiry>
+        <resources><heap unit="entries">50</heap></resources>
+    </cache>
+
+    <!--
+        Query result cache region  (hibernate.cache.use_query_cache=true).
+        Stores entity IDs returned by cacheable JPQL queries.
+        Auto-invalidated by Hibernate when the queried table is written.
+    -->
+    <cache alias="default-query-results-region">
+        <expiry><ttl unit="seconds">60</ttl></expiry>
+        <resources><heap unit="entries">1000</heap></resources>
+    </cache>
+
+</config>
