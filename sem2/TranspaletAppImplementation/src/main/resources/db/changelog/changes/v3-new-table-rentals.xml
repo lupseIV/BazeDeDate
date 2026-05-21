@@ -30,8 +30,7 @@
             <column name="total_cost" type="DECIMAL(10,2)"/>
             <column name="return_status" type="VARCHAR(255)">
                 <constraints nullable="false"
-                             checkConstraint="return_status IN ('Active', 'Returned', 'Overdue')"
-                             constraintName="CHK_Rentals_ReturnStatus"/>
+                             checkConstraint="return_status IN ('Active', 'Returned', 'Overdue')"/>
             </column>
         </createTable>
 
