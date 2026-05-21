@@ -37,10 +37,7 @@
             VALUES (src.tid, src.sd, src.ed, src.dr, src.tc, src.rs);
         </sql>
     <rollback>
-        <sql>
-            DELETE FROM Rentals
-            WHERE rental_id IN (SELECT NewID FROM @Map_Rentals);
-        </sql>
+        <sql>DELETE FROM Rentals;</sql>
     </rollback>
     </changeSet>
 </databaseChangeLog>
