@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="0" author="admin">
+        <sql>
+            WITH NumberedTrucks AS (
+                SELECT truck_id, ROW_NUMBER() OVER (ORDER BY truck_id) AS rn
+                FROM PalletTrucks
+            )
+                MERGE INTO Rentals AS target USING (
+                SELECT src.OldID, t.truck_id as tid, src.sd, src.ed, src.dr, src.tc, src.rs
+                FROM (VALUES
+                          (1,  1,  '2023-01-10', '2023-01-20', 120.00, 1200.00, 'Returned'),
+                          (2,  2,  '2023-02-01', '2023-02-10', 150.00, 1350.00, 'Returned'),
+                          (3,  3,  '2023-03-05', '2023-03-15', 100.00, 1000.00, 'Returned'),
+                          (4,  4,  '2023-04-01', NULL,          200.00, NULL,    'Active'),
+                          (5,  5,  '2023-05-01', '2023-05-08',  90.00,  630.00, 'Returned'),
+                          (6,  6,  '2023-06-01', NULL,          160.00, NULL,    'Active'),
+                          (7,  7,  '2023-07-15', '2023-07-25', 110.00, 1100.00, 'Returned'),
+                          (8,  8,  '2023-08-10', '2023-08-20',  95.00,  950.00, 'Returned'),
+                          (9,  9,  '2023-09-01', NULL,          175.00, NULL,    'Active'),
+                          (10, 10, '2023-10-05', '2023-10-15', 125.00, 1250.00, 'Returned'),
+                          (11, 11, '2023-11-01', '2023-11-10', 130.00, 1170.00, 'Returned'),
+                          (12, 12, '2023-11-20', NULL,          145.00, NULL,    'Active'),
+                          (13, 13, '2023-12-01', '2023-12-05', 100.00,  500.00, 'Returned'),
+                          (14, 14, '2024-01-02', NULL,          180.00, NULL,    'Active'),
+                          (15, 15, '2024-01-10', NULL,          160.00, NULL,    'Active')
+                     ) AS src(OldID, truck_index, sd, ed, dr, tc, rs)
+                     -- Facem JOIN cu tabelul real de PalletTrucks folosind indexul generat
+                     JOIN NumberedTrucks t ON src.truck_index = t.rn
+            ) AS src ON 1=0
+                WHEN NOT MATCHED THEN
+            INSERT (truck_id, start_date, end_date, daily_rate, total_cost, return_status)
+            VALUES (src.tid, src.sd, src.ed, src.dr, src.tc, src.rs);
+        </sql>
+    <rollback>
+        <sql>
+            DELETE FROM Rentals
+            WHERE rental_id IN (SELECT NewID FROM @Map_Rentals);
+        </sql>
+    </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -9,6 +9,7 @@
         <class>org.example.domain.Wheel</class>
         <class>org.example.domain.Bearing</class>
         <class>org.example.domain.PalletTruckDetails</class>
+        <class>org.example.domain.Rental</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
@@ -24,14 +25,14 @@
             <property name="hibernate.hikari.idleTimeout" value="600000"/>
             <property name="hibernate.hikari.maxLifetime" value="1800000"/>
 
-            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
             <property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.jcache.internal.JCacheRegionFactory"/>
-            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="false"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
         </properties>
     </persistence-unit>
 </persistence>

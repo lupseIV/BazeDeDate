@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "PalletTrucks")
-public class PalletTruck implements Identifiable<UUID>{
+public class PalletTruck extends AuditableEntity implements Identifiable<UUID>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

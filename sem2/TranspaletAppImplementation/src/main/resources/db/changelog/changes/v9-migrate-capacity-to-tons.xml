@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+
+    <changeSet id="v9-add-capacity-tons-column" author="lupse">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="PalletTrucks" columnName="capacity_tons"/>
+            </not>
+        </preConditions>
+
+        <sql>
+            ALTER TABLE PalletTrucks ADD capacity_tons DECIMAL(10, 3) NULL;
+        </sql>
+
+        <rollback>
+            <sql>ALTER TABLE PalletTrucks DROP COLUMN capacity_tons;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="v9-migrate-capacity-kg-to-tons" author="lupse">
+
+        <sql>
+            UPDATE PalletTrucks
+            SET capacity_tons = CAST(capacity_kg AS DECIMAL(10, 3)) / 1000.0
+            WHERE capacity_tons IS NULL;
+        </sql>
+
+        <rollback>
+            <sql>UPDATE PalletTrucks SET capacity_tons = NULL;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="v9-set-capacity-tons-not-null" author="lupse">
+        <sql>
+            ALTER TABLE PalletTrucks ALTER COLUMN capacity_tons DECIMAL(10, 3) NOT NULL;
+        </sql>
+        <rollback>
+            <sql>ALTER TABLE PalletTrucks ALTER COLUMN capacity_tons DECIMAL(10, 3) NULL;</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

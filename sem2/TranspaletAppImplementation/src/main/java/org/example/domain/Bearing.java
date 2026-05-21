@@ -14,16 +14,27 @@ public class Bearing implements Identifiable<UUID>{
     @Column(name = "bid", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "diameter", nullable = false)
-    private Long diameter;
+    @Column(name = "diameter", nullable = false, columnDefinition = "DECIMAL(10,4)")
+    private Double diameter;
 
-    @Column(name = "mid", nullable = false)
+    @Column(name = "mid")
     private Long mid;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private int version = 1;
+
+    public int getVersion() {
+        return version;
+    }
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
     public Bearing() {
     }
 
-    public Bearing(UUID id, Long diameter, Long mid) {
+    public Bearing(UUID id, Double diameter, Long mid) {
         this.id = id;
         this.diameter = diameter;
         this.mid = mid;
@@ -39,12 +50,12 @@ public class Bearing implements Identifiable<UUID>{
         this.id = id;
     }
 
-    public Long getDiameter() {
+    public Double getDiameter() {
         return diameter;
     }
 
-    public void setDiameter(Long diameter) {
-        diameter = diameter;
+    public void setDiameter(Double diameter) {
+        this.diameter = diameter;
     }
 
     public Long getMid() {

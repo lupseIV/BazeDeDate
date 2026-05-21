@@ -8,14 +8,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.example.domain.Bearing;
-import org.example.domain.PalletTruck;
-import org.example.domain.Wheel;
-import org.example.domain.WheelMaterial;
-import org.example.service.BearingsService;
-import org.example.service.PalletTrucksService;
-import org.example.service.WheelMaterialsService;
-import org.example.service.WheelsService;
+import org.example.domain.*;
+import org.example.service.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +29,24 @@ public class MainController {
     private BearingsService bearingsService;
     private WheelMaterialsService wheelMaterialsService;
 
+    @FXML private TableView<Rental>  rentalTable;
+    @FXML private TableColumn<Rental, String> startDateCol;
+    @FXML private TableColumn<Rental, String> endDateCol;
+    @FXML private TableColumn<Rental, String> dailyRateCol;
+    @FXML private TableColumn<Rental, String> totalCostCol;
+    @FXML private TableColumn<Rental, String> statusCol;
+    @FXML private TableColumn<Rental, String> rentalTruckSerialCol;
+    @FXML private CheckBox showDeletedCheck;
+    @FXML private Button rentalsDeleteBtn;
+
+
     // Parent (Wheel) table & columns
     @FXML private TableView<Wheel> wheelsTable;
     @FXML private TableColumn<Wheel, String> wheelIdCol;
     @FXML private TableColumn<Wheel, String> wheelMaterialCol;
     @FXML private TableColumn<Wheel, String> wheelMaxWeightCol;
     @FXML private TableColumn<Wheel, String> wheelBearingDiamCol;
+    @FXML private TableColumn<Wheel, String> materialDensityCol;
 
     // Parent (Wheel) form controls
     @FXML private ComboBox<WheelMaterial> wheelMaterialCombo;
@@ -68,7 +74,8 @@ public class MainController {
 
     private final ObservableList<Wheel> wheelData = FXCollections.observableArrayList();
     private final ObservableList<PalletTruck> truckData = FXCollections.observableArrayList();
-
+    private RentalsService rentalsService;
+    private final ObservableList<Rental> rentalData = FXCollections.observableArrayList();
     private List<PalletTruck> allTrucks = List.of();
 
     private Wheel selectedWheel = null;
@@ -76,22 +83,39 @@ public class MainController {
     public void setServices(PalletTrucksService palletTrucksService,
                             WheelsService wheelsService,
                             BearingsService bearingsService,
-                            WheelMaterialsService wheelMaterialsService) {
+                            WheelMaterialsService wheelMaterialsService,
+                            RentalsService rentalsService) {
         this.palletTrucksService = palletTrucksService;
         this.wheelsService = wheelsService;
         this.bearingsService = bearingsService;
         this.wheelMaterialsService = wheelMaterialsService;
+        this.rentalsService = rentalsService;
 
-        // Perform async DB loads without freezing the UI thread
         loadComboBoxes();
         loadWheels();
         loadAllTrucksCache();
+        loadRentals();
     }
 
     // ======================== FXML initialize ========================
 
     @FXML
     private void initialize() {
+        //renatls table
+        startDateCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getStartDate() != null ? cd.getValue().getStartDate().toString() : "—"));
+        endDateCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getEndDate() != null ? cd.getValue().getEndDate().toString() : "—"));
+        dailyRateCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getDailyRate() != null ? cd.getValue().getDailyRate().toString() : "—"));
+        totalCostCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getTotalCost() != null ? cd.getValue().getTotalCost().toString() : "—"));
+        statusCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getReturnStatus() != null ? cd.getValue().getReturnStatus() : "—"));
+        rentalTruckSerialCol.setCellValueFactory(cd -> new SimpleStringProperty(
+                cd.getValue().getTruck() != null ? cd.getValue().getTruck().getSerialNumber() : "—"));
+
+
         // --- Parent (Wheel) table column setup ---
         wheelIdCol.setCellValueFactory(cd ->
                 new SimpleStringProperty(cd.getValue().getId().toString()));
@@ -104,6 +128,10 @@ public class MainController {
         wheelBearingDiamCol.setCellValueFactory(cd -> {
             Bearing b = cd.getValue().getBearing();
             return new SimpleStringProperty(b != null ? String.valueOf(b.getDiameter()) : "—");
+        });
+        materialDensityCol.setCellValueFactory( cd -> {
+            WheelMaterial m = cd.getValue().getMaterial();
+            return new SimpleStringProperty(m != null ? String.valueOf(m.getDensity()) : "—");
         });
 
         // --- Child (PalletTruck) table column setup ---
@@ -137,6 +165,41 @@ public class MainController {
     }
 
     // ======================== Data loading ========================
+
+    @FXML
+    private void onToggleDeleted() {
+        if(showDeletedCheck.isSelected()) {
+            rentalsDeleteBtn.setText("Hard Delete");
+        } else {
+            rentalsDeleteBtn.setText("Soft Delete");
+        }
+        loadRentals();
+    }
+
+    private void loadRentals() {
+        boolean includeDeleted = showDeletedCheck.isSelected();
+        if(includeDeleted){
+            CompletableFuture.supplyAsync(() -> rentalsService.findAllIncludingDeleted())
+                    .thenAcceptAsync(rentals -> {
+                        rentalData.setAll(rentals);
+                        rentalTable.setItems(rentalData);
+                    }, Platform::runLater)
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> showError("Error loading rentals", ex.getMessage()));
+                        return null;
+                    });
+        } else {
+            CompletableFuture.supplyAsync(() -> rentalsService.findAll())
+                    .thenAcceptAsync(rentals -> {
+                        rentalData.setAll(rentals);
+                        rentalTable.setItems(rentalData);
+                    }, Platform::runLater)
+                    .exceptionally(ex -> {
+                        Platform.runLater(() -> showError("Error loading rentals", ex.getMessage()));
+                        return null;
+                    });
+        }
+    }
 
     /** Loads all wheels from the DB asynchronously into the parent table. */
     private void loadWheels() {
@@ -215,6 +278,25 @@ public class MainController {
     }
 
     // ======================== Selection listeners ========================
+
+    @FXML
+    private void onDeleteRental() {
+        Rental selected = rentalTable.getSelectionModel().getSelectedItem();
+        boolean hard = showDeletedCheck.isSelected();
+        if (selected != null) {
+            rentalsService.delete(selected.getId(), hard);
+            loadRentals();
+        }
+    }
+
+    @FXML
+    private void onRestoreRental() {
+        Rental selected = rentalTable.getSelectionModel().getSelectedItem();
+        if (selected != null && selected.isDeleted()) {
+            rentalsService.restoreById(selected.getId());
+            loadRentals();
+        }
+    }
 
     private void onParentSelectionChanged(Wheel wheel) {
         Platform.runLater(() -> {

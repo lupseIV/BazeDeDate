@@ -1,0 +1,132 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="lupse (generated)" id="1779275775492-1">
+        <createTable tableName="Employees">
+            <column computed="false" defaultValueComputed="newsequentialid()" defaultValueConstraintName="DF_Employees_id" name="employee_id" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_Employees"/>
+            </column>
+            <column computed="false" name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="hire_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="phone" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-2">
+        <createTable tableName="PalletTrucks">
+            <column computed="false" defaultValueComputed="newsequentialid()" defaultValueConstraintName="DF_PalletTrucks_id" name="truck_id" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PalletTrucks"/>
+            </column>
+            <column computed="false" name="serial_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="model" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="capacity_kg" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="wheels_id" type="uniqueidentifier">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-3">
+        <createTable tableName="Bearings">
+            <column computed="false" defaultValueComputed="newsequentialid()" defaultValueConstraintName="DF_Bearings_bid" name="bid" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_Bearings"/>
+            </column>
+            <column computed="false" name="diameter" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="mid" type="bigint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-4">
+        <createTable tableName="WheelMaterials">
+            <column computed="false" defaultValueComputed="newsequentialid()" defaultValueConstraintName="DF_WheelMaterials_id" name="materials_id" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_WheelMaterials"/>
+            </column>
+            <column computed="false" name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="max_weight" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-5">
+        <createTable tableName="Wheels">
+            <column computed="false" defaultValueComputed="newsequentialid()" defaultValueConstraintName="DF_Wheels_id" name="wheels_id" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_Wheels"/>
+            </column>
+            <column computed="false" name="materials_id" type="uniqueidentifier">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="max_weight" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="bid" type="uniqueidentifier">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-6">
+        <createTable tableName="PalletTruckDetails">
+            <column computed="false" name="truck_id" type="uniqueidentifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PalletTruckDetails"/>
+            </column>
+            <column computed="false" name="purchase_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column computed="false" name="notes" type="varchar(MAX)"/>
+            <column computed="false" name="manufacturer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-7">
+        <addUniqueConstraint columnNames="serial_number" constraintName="UQ_PalletTrucks_SN" tableName="PalletTrucks"/>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-8">
+        <addForeignKeyConstraint baseColumnNames="bid" baseTableName="Wheels" constraintName="FK_Wheels_Bearings" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="bid" referencedTableName="Bearings" validate="true"/>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-9">
+        <addForeignKeyConstraint baseColumnNames="materials_id" baseTableName="Wheels" constraintName="FK_Wheels_WheelMaterials" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="materials_id" referencedTableName="WheelMaterials" validate="true"/>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-10">
+        <addForeignKeyConstraint baseColumnNames="truck_id" baseTableName="PalletTruckDetails" constraintName="FK_PalletTruckDetails_Trucks" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="truck_id" referencedTableName="PalletTrucks" validate="true"/>
+    </changeSet>
+    <changeSet author="lupse (generated)" id="1779275775492-11">
+        <addForeignKeyConstraint baseColumnNames="wheels_id" baseTableName="PalletTrucks" constraintName="FK_PalletTrucks_Wheels" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="wheels_id" referencedTableName="Wheels" validate="true"/>
+    </changeSet>
+    <include file="src/main/resources/db/changelog/changes/v2-wheelmaterial-add-density.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v3-new-table-rentals.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v11-seed-core-entities.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v4-seed-rentals.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v5-bearings-diameter-type-decimal.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v6-add-indexes.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v7-optimistic-locking.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v8-soft-delete-rentals.yaml"/>
+    <include file="src/main/resources/db/changelog/changes/v9-migrate-capacity-to-tons.xml"/>
+    <include file="src/main/resources/db/changelog/changes/v10-audit-logging.xml"/>
+</databaseChangeLog>

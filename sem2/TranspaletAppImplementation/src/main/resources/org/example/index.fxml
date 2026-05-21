@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <VBox spacing="10.0"
       xmlns:fx="http://javafx.com/fxml/1"
       xmlns="http://javafx.com/javafx/17.0.12"
@@ -21,7 +22,26 @@
         <Label text="Search:"/>
         <TextField fx:id="wheelSearchField" promptText="Filter by material, max weight..." prefWidth="300.0"/>
         <Button text="Refresh" onAction="#onRefreshWheels"/>
+        <CheckBox fx:id="showDeletedCheck" text="Afisare inregistrari sterse (ADMIN VIEW)" onAction="#onToggleDeleted"/>
+        <Button text="Restaurare Inregistrare" onAction="#onRestoreRental"/>
+        <Button fx:id="rentalsDeleteBtn" text="Soft delete" onAction="#onDeleteRental"/>
     </HBox>
+
+    <TableView fx:id="rentalTable" prefHeight="200.0">
+        <columns>
+            <TableColumn fx:id="startDateCol" text="Start" />
+            <TableColumn fx:id="endDateCol" text="End" />
+            <TableColumn fx:id="dailyRateCol" text="Rate" />
+            <TableColumn fx:id="totalCostCol" text="Total" />
+            <TableColumn fx:id="statusCol" text="Status" />
+            <TableColumn fx:id="rentalTruckSerialCol" text="Truck" />
+            <TableColumn text="Deleted By" prefWidth="100.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="deletedBy" />
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
 
     <TableView fx:id="wheelsTable" prefHeight="200.0">
         <columns>
@@ -29,6 +49,7 @@
             <TableColumn fx:id="wheelMaterialCol" text="Material" prefWidth="160.0"/>
             <TableColumn fx:id="wheelMaxWeightCol" text="Max Weight (kg)" prefWidth="130.0"/>
             <TableColumn fx:id="wheelBearingDiamCol" text="Bearing Diameter" prefWidth="130.0"/>
+            <TableColumn fx:id="materialDensityCol" text="Material Density" prefWidth="130.0"/>
         </columns>
     </TableView>
 

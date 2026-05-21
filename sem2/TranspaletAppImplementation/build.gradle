@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id ("org.openjfx.javafxplugin").version("0.1.0")
+    id 'org.liquibase.gradle' version '2.2.0'
 }
 
 group = 'org.example'
@@ -16,13 +17,23 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
+configurations {
+    liquibaseRuntime
+}
+
+
 dependencies {
     implementation 'com.microsoft.sqlserver:mssql-jdbc:13.3.2.jre11-preview'
     implementation 'org.knowm.xchart:xchart:3.8.3'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc_auth:12.6.1.x64'
 
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.23.1'
+    liquibaseRuntime 'info.picocli:picocli:4.7.6'
+    liquibaseRuntime 'com.microsoft.sqlserver:mssql-jdbc:13.3.2.jre11-preview'
+    liquibaseRuntime 'org.slf4j:slf4j-simple:2.0.17'
+
     implementation("org.hibernate.orm:hibernate-core:6.4.10.Final")
-    implementation("org.hibernate:hibernate-hikaricp:5.2.10.Final")
+    implementation("org.hibernate.orm:hibernate-hikaricp:6.4.10.Final")
     implementation 'org.hibernate.orm:hibernate-jcache:6.4.4.Final'
     implementation 'org.ehcache:ehcache:3.10.8'    // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-reload4j
     implementation("org.slf4j:slf4j-reload4j:2.0.17")
@@ -42,16 +53,14 @@ application{
     applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
 }
 
-jar{
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes('mainClass' : 'Application')
+liquibase {
+    activities {
+        main {
+            changelogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            url 'jdbc:sqlserver://localhost:1433;databaseName=proiect_sem2;integratedSecurity=false;encrypt=true;trustServerCertificate=true;'
+            username 'user'
+            password 'parola'
+            driver 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
+        }
     }
-    from {
-        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
-    }
-}
-
-test {
-    useJUnitPlatform()
 }

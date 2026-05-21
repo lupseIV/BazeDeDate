@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+
+    <changeSet id="v11-seed-core-entities" author="lupse" runOnChange="false">
+        <preConditions onFail="MARK_RAN">
+            <!-- Only seed if WheelMaterials is empty -->
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM WheelMaterials</sqlCheck>
+        </preConditions>
+
+        <sql splitStatements="false">
+BEGIN
+
+    -- ============================================================
+    -- 1. WheelMaterials (no dependencies)
+    -- ============================================================
+    DECLARE @Map_Materials TABLE (OldID INT, NewID UNIQUEIDENTIFIER);
+
+    MERGE INTO WheelMaterials AS target
+    USING (VALUES
+        (1,  'Rubber',       1000),
+        (2,  'Polyurethane', 1200),
+        (3,  'Steel',        2000),
+        (4,  'Nylon',         800),
+        (5,  'Aluminum',     1500),
+        (6,  'Cast Iron',    2200),
+        (7,  'Composite',    1800),
+        (8,  'Rubber',        900),
+        (9,  'Polyurethane', 1300),
+        (10, 'Steel',        2500),
+        (11, 'Nylon',         700),
+        (12, 'Aluminum',     1400),
+        (13, 'Composite',    1600),
+        (14, 'Cast Iron',    2100),
+        (15, 'Rubber',       1100)
+    ) AS src(OldID, type, mw)
+    ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT (type, max_weight, density)
+        VALUES (src.type, src.mw, 0.0000)
+    OUTPUT src.OldID, INSERTED.materials_id INTO @Map_Materials(OldID, NewID);
+
+    -- ============================================================
+    -- 2. Bearings (no dependencies)
+    -- ============================================================
+    DECLARE @Map_Bearings TABLE (OldID INT, NewID UNIQUEIDENTIFIER);
+
+    MERGE INTO Bearings AS target
+    USING (VALUES
+        (1, 25.0), (2, 30.0), (3, 28.0), (4, 35.0), (5, 32.0),
+        (6, 29.0), (7, 27.0), (8, 26.0), (9, 33.0), (10, 31.0),
+        (11, 24.0),(12, 36.0),(13, 29.0),(14, 34.0),(15, 25.0)
+    ) AS src(OldID, dia)
+    ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT (diameter)
+        VALUES (src.dia)
+    OUTPUT src.OldID, INSERTED.bid INTO @Map_Bearings(OldID, NewID);
+
+    -- ============================================================
+    -- 3. Wheels (depends on WheelMaterials + Bearings)
+    -- ============================================================
+    DECLARE @Map_Wheels TABLE (OldID INT, NewID UNIQUEIDENTIFIER);
+
+    MERGE INTO Wheels AS target
+    USING (
+        SELECT
+            src.OldID,
+            m.NewID  AS mid,
+            src.mw,
+            b.NewID  AS bid
+        FROM (VALUES
+            (1,  1,  1000, 1),  (2,  2,  1200, 2),  (3,  3,  2000, 3),
+            (4,  4,   800, 4),  (5,  5,  1500, 5),  (6,  6,  2200, 6),
+            (7,  7,  1800, 7),  (8,  8,   900, 8),  (9,  9,  1300, 9),
+            (10, 10, 2500, 10), (11, 11,  700, 11), (12, 12, 1400, 12),
+            (13, 13, 1600, 13), (14, 14, 2100, 14), (15, 15, 1100, 15)
+        ) AS src(OldID, mat_id, mw, bear_id)
+        JOIN @Map_Materials m ON src.mat_id  = m.OldID
+        JOIN @Map_Bearings  b ON src.bear_id = b.OldID
+    ) AS src
+    ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT (materials_id, max_weight, bid)
+        VALUES (src.mid, src.mw, src.bid)
+    OUTPUT src.OldID, INSERTED.wheels_id INTO @Map_Wheels(OldID, NewID);
+
+    -- ============================================================
+    -- 4. PalletTrucks (depends on Wheels)
+    -- ============================================================
+    DECLARE @Map_Trucks TABLE (OldID INT, NewID UNIQUEIDENTIFIER);
+
+    MERGE INTO PalletTrucks AS target
+    USING (
+        SELECT
+            src.OldID,
+            src.sn, src.type, src.model, src.cap, src.status,
+            w.NewID AS wid
+        FROM (VALUES
+            (1,  'SN1001', 'Manual',   'Model A1',  2500, 'Available',      1),
+            (2,  'SN1002', 'Electric', 'Model E2',  3000, 'Available',      2),
+            (3,  'SN1003', 'Manual',   'Model M3',  2000, 'Rented',         3),
+            (4,  'SN1004', 'Electric', 'Model E4',  4000, 'In Maintenance', 4),
+            (5,  'SN1005', 'Manual',   'Model M5',  1500, 'Available',      5),
+            (6,  'SN1006', 'Electric', 'Model E6',  3200, 'Retired',        6),
+            (7,  'SN1007', 'Manual',   'Model M7',  2800, 'Available',      7),
+            (8,  'SN1008', 'Electric', 'Model E8',  3500, 'Available',      8),
+            (9,  'SN1009', 'Manual',   'Model M9',  2500, 'Rented',         9),
+            (10, 'SN1010', 'Electric', 'Model E10', 3700, 'Available',     10),
+            (11, 'SN1011', 'Manual',   'Model M11', 2600, 'Available',     11),
+            (12, 'SN1012', 'Electric', 'Model E12', 3400, 'Available',     12),
+            (13, 'SN1013', 'Manual',   'Model M13', 2100, 'Available',     13),
+            (14, 'SN1014', 'Electric', 'Model E14', 3300, 'Rented',        14),
+            (15, 'SN1015', 'Manual',   'Model M15', 1800, 'Available',     15)
+        ) AS src(OldID, sn, type, model, cap, status, wheel_id)
+        JOIN @Map_Wheels w ON src.wheel_id = w.OldID
+    ) AS src
+    ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT (serial_number, type, model, capacity_kg, status, wheels_id)
+        VALUES (src.sn, src.type, src.model, src.cap, src.status, src.wid)
+    OUTPUT src.OldID, INSERTED.truck_id INTO @Map_Trucks(OldID, NewID);
+
+    -- ============================================================
+    -- 5. PalletTruckDetails (depends on PalletTrucks)
+    -- ============================================================
+    INSERT INTO PalletTruckDetails (truck_id, purchase_date, notes, manufacturer)
+    SELECT
+        t.NewID,
+        src.pd,
+        src.notes,
+        src.mfg
+    FROM (VALUES
+        (1,  '2022-03-12', 'Initial purchase',         'Toyota'),
+        (2,  '2023-02-10', 'With upgraded control',    'Linde'),
+        (3,  '2021-12-01', 'Heavy-duty model',         'Crown'),
+        (4,  '2022-07-15', 'Used in warehouse A',      'Yale'),
+        (5,  '2023-04-22', 'Compact design',           'Nissan'),
+        (6,  '2022-01-10', 'Prototype model',          'Hyster'),
+        (7,  '2022-05-09', 'Excellent performance',    'Toyota'),
+        (8,  '2023-03-18', 'Battery replaced',         'Crown'),
+        (9,  '2022-06-11', 'Stable on slopes',         'Linde'),
+        (10, '2023-01-19', 'Hydraulics upgraded',      'Yale'),
+        (11, '2022-04-05', 'Used for small pallets',   'Toyota'),
+        (12, '2023-02-24', 'Fast charging',            'Nissan'),
+        (13, '2022-08-02', 'Serviced in 2023',         'Crown'),
+        (14, '2023-06-10', 'High capacity battery',    'Linde'),
+        (15, '2022-09-12', 'Regular use',              'Toyota')
+    ) AS src(OldID, pd, notes, mfg)
+    JOIN @Map_Trucks t ON src.OldID = t.OldID;
+
+    -- ============================================================
+    -- 6. Employees (no dependencies)
+    -- ============================================================
+    MERGE INTO Employees AS target
+    USING (VALUES
+        ('Andrei',    'Popescu',  'Technician', '2020-01-10', '0740000001', 'andrei.popescu@transpalet.ro'),
+        ('Maria',     'Ionescu',  'Driver',     '2021-03-12', '0740000002', 'maria.ionescu@transpalet.ro'),
+        ('George',    'Stan',     'Sales',      '2019-07-15', '0740000003', 'george.stan@transpalet.ro'),
+        ('Ioana',     'Radu',     'Manager',    '2018-09-20', '0740000004', 'ioana.radu@transpalet.ro'),
+        ('Alexandru', 'Tudor',    'Admin',      '2022-02-05', '0740000005', 'alex.tudor@transpalet.ro'),
+        ('Roxana',    'Ene',      'Technician', '2020-11-11', '0740000006', 'roxana.ene@transpalet.ro'),
+        ('Paul',      'Ilie',     'Driver',     '2021-08-18', '0740000007', 'paul.ilie@transpalet.ro'),
+        ('Cristian',  'Marin',    'Sales',      '2019-05-23', '0740000008', 'cristian.marin@transpalet.ro'),
+        ('Diana',     'Pop',      'Manager',    '2018-01-30', '0740000009', 'diana.pop@transpalet.ro'),
+        ('Mihai',     'Dobre',    'Admin',      '2022-03-17', '0740000010', 'mihai.dobre@transpalet.ro'),
+        ('Laura',     'Badea',    'Technician', '2020-06-19', '0740000011', 'laura.badea@transpalet.ro'),
+        ('Razvan',    'Ursu',     'Driver',     '2021-02-25', '0740000012', 'razvan.ursu@transpalet.ro'),
+        ('Paula',     'Dragan',   'Sales',      '2019-10-05', '0740000013', 'paula.dragan@transpalet.ro'),
+        ('Radu',      'Popa',     'Manager',    '2018-12-09', '0740000014', 'radu.popa@transpalet.ro'),
+        ('Irina',     'Olteanu',  'Admin',      '2022-04-15', '0740000015', 'irina.olteanu@transpalet.ro')
+    ) AS src(fn, ln, role, hd, phone, email)
+    ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT (first_name, last_name, role, hire_date, phone, email)
+        VALUES (src.fn, src.ln, src.role, src.hd, src.phone, src.email);
+
+END
+        </sql>
+
+        <rollback>
+            <sql splitStatements="false">
+BEGIN
+    -- Remove details first (FK CASCADE handles PalletTruckDetails on most engines,
+    -- but we delete explicitly for clarity)
+    DELETE FROM PalletTruckDetails
+    WHERE truck_id IN (SELECT truck_id FROM PalletTrucks WHERE serial_number LIKE 'SN10%');
+
+    DELETE FROM PalletTrucks  WHERE serial_number LIKE 'SN10%';
+    DELETE FROM Wheels        WHERE max_weight IN (1000,1200,2000,800,1500,2200,1800,900,1300,2500,700,1400,1600,2100,1100);
+    DELETE FROM Bearings      WHERE diameter   IN (25.0,30.0,28.0,35.0,32.0,29.0,27.0,26.0,33.0,31.0,24.0,36.0,34.0);
+    DELETE FROM WheelMaterials WHERE type     IN ('Rubber','Polyurethane','Steel','Nylon','Aluminum','Cast Iron','Composite');
+    DELETE FROM Employees     WHERE email     LIKE '%@transpalet.ro';
+END
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: v8-soft-delete-rentals
+      author: lupse
+      changes:
+        - addColumn:
+            tableName: rentals
+            columns:
+              - column:
+                  name: deleted_at
+                  type: DATETIME2
+              - column:
+                  name: deleted_by
+                  type: VARCHAR(255)
+              - column:
+                  name: is_deleted
+                  type: BIT
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropColumn:
+            tableName: rentals
+            columns:
+              - column: { name: deleted_at }
+              - column: { name: deleted_by }
+              - column: { name: is_deleted }

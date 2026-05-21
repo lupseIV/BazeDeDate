@@ -27,7 +27,7 @@ public class BearingDbRepository implements BearingRepository {
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getId().toString());
-            stmt.setLong(2, entity.getDiameter());
+            stmt.setDouble(2, entity.getDiameter());
 
             if (entity.getMid() != null) {
                 stmt.setLong(3, entity.getMid());
@@ -48,7 +48,7 @@ public class BearingDbRepository implements BearingRepository {
         try (
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setLong(1, entity.getDiameter());
+            stmt.setDouble(1, entity.getDiameter());
             if (entity.getMid() != null) {
                 stmt.setLong(2, entity.getMid());
             } else {
@@ -116,7 +116,7 @@ public class BearingDbRepository implements BearingRepository {
 
     private Bearing extractBearing(ResultSet rs) throws SQLException {
         UUID bid = UUID.fromString(rs.getString("bid"));
-        Long diameter = rs.getLong("diameter");
+        Double diameter = rs.getDouble("diameter");
 
         long midVal = rs.getLong("mid");
         Long mid = rs.wasNull() ? null : midVal;

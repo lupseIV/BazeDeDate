@@ -131,7 +131,7 @@ public class WheelDbRepository implements WheelsRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     bearing.setId(UUID.fromString(rs.getString("bid")));
-                    bearing.setDiameter(rs.getLong("diameter"));
+                    bearing.setDiameter(rs.getDouble("diameter"));
                     bearing.setMid(rs.getLong("mid"));
                 }
             }

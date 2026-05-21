@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v2-wheelmaterial-add-density" author="lupse">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="WheelMaterials" columnName="density"/>
+            </not>
+        </preConditions>
+        <sql>
+            ALTER TABLE WheelMaterials ADD density DECIMAL(10,4) NOT NULL DEFAULT 0.0000;
+        </sql>
+        <rollback>
+            <sql>ALTER TABLE WheelMaterials DROP COLUMN density;</sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

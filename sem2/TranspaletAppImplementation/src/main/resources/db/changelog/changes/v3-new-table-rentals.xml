@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v3-new-table-rentals" author="lupse">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="Rentals"/>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE Rentals (
+                                     rental_id   UNIQUEIDENTIFIER CONSTRAINT DF_Rentals_id DEFAULT NEWSEQUENTIALID(),
+                                     truck_id    UNIQUEIDENTIFIER NOT NULL,
+                                     start_date  DATE NOT NULL,
+                                     end_date    DATE,
+                                     daily_rate  DECIMAL(10,2) NOT NULL,
+                                     total_cost  DECIMAL(10,2),
+                                     return_status VARCHAR(255) NOT NULL,
+                                     CONSTRAINT PK_Rentals PRIMARY KEY (rental_id),
+                                     CONSTRAINT CHK_Rentals_ReturnStatus CHECK (return_status IN ('Active', 'Returned', 'Overdue')),
+                                     CONSTRAINT FK_Rentals_Trucks FOREIGN KEY (truck_id) REFERENCES PalletTrucks(truck_id)
+            );
+        </sql>
+        <rollback>
+            <sql>DROP TABLE Rentals;
+            TABLE "Rentals";</sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
