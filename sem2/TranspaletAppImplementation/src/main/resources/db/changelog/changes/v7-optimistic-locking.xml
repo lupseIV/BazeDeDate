@@ -4,15 +4,20 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0" author="admin">
-    <sql>
-        ALTER TABLE Bearings
-        ADD version int NOT NULL DEFAULT 1;
-    </sql>
-        <rollback>
-            <dropDefaultValue tableName="Bearings" columnName="version"/>
 
+    <changeSet id="0" author="admin">
+
+        <addColumn tableName="Bearings">
+            <column name="version" type="INT" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <rollback>
+
+            <dropDefaultValue tableName="Bearings" columnName="version" columnDataType="INT"/>
             <dropColumn tableName="Bearings" columnName="version"/>
         </rollback>
     </changeSet>
+
 </databaseChangeLog>

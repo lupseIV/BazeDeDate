@@ -4,40 +4,52 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="v6-add-indexes" author="lupse">
+
+    <changeSet id="v6-idx-pallettrucks-serial-number" author="lupse">
         <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists indexName="idx_pallettrucks_serial_number" tableName="PalletTrucks"/>
             </not>
+        </preConditions>
+
+        <createIndex indexName="idx_pallettrucks_serial_number" tableName="PalletTrucks">
+            <column name="serial_number"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex indexName="idx_pallettrucks_serial_number" tableName="PalletTrucks"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="v6-idx-rentals-truck-id" author="lupse">
+        <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists indexName="idx_rentals_truck_id" tableName="Rentals"/>
             </not>
         </preConditions>
-        <sql>
-            CREATE INDEX idx_pallettrucks_serial_number ON PalletTrucks(serial_number);
-            CREATE INDEX idx_rentals_truck_id ON Rentals(truck_id);
-        </sql>
+
+        <createIndex indexName="idx_rentals_truck_id" tableName="Rentals">
+            <column name="truck_id"/>
+        </createIndex>
+
         <rollback>
-            <sql>
-                DROP INDEX idx_pallettrucks_serial_number ON PalletTrucks;
-                DROP INDEX idx_rentals_truck_id ON Rentals;
-            </sql>
+            <dropIndex indexName="idx_rentals_truck_id" tableName="Rentals"/>
         </rollback>
     </changeSet>
 
-    <changeSet id="v6-add-indexes-mail" author="lupse">
+    <changeSet id="v6-idx-employees-email" author="lupse">
         <preConditions onFail="MARK_RAN">
             <not>
-                <indexExists indexName="idx_employees_email" tableName="employees"/>
+                <indexExists indexName="idx_employees_email" tableName="Employees"/>
             </not>
         </preConditions>
-        <sql>
-            CREATE INDEX idx_employees_email ON employees(email);
-        </sql>
+
+        <createIndex indexName="idx_employees_email" tableName="Employees">
+            <column name="email"/>
+        </createIndex>
+
         <rollback>
-            <sql>
-                DROP INDEX idx_employees_email ON employees;
-            </sql>
+            <dropIndex indexName="idx_employees_email" tableName="Employees"/>
         </rollback>
     </changeSet>
 

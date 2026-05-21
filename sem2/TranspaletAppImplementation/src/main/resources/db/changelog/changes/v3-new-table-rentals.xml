@@ -10,23 +10,35 @@
                 <tableExists tableName="Rentals"/>
             </not>
         </preConditions>
-        <sql>
-            CREATE TABLE Rentals (
-                                     rental_id   UNIQUEIDENTIFIER CONSTRAINT DF_Rentals_id DEFAULT NEWSEQUENTIALID(),
-                                     truck_id    UNIQUEIDENTIFIER NOT NULL,
-                                     start_date  DATE NOT NULL,
-                                     end_date    DATE,
-                                     daily_rate  DECIMAL(10,2) NOT NULL,
-                                     total_cost  DECIMAL(10,2),
-                                     return_status VARCHAR(255) NOT NULL,
-                                     CONSTRAINT PK_Rentals PRIMARY KEY (rental_id),
-                                     CONSTRAINT CHK_Rentals_ReturnStatus CHECK (return_status IN ('Active', 'Returned', 'Overdue')),
-                                     CONSTRAINT FK_Rentals_Trucks FOREIGN KEY (truck_id) REFERENCES PalletTrucks(truck_id)
-            );
-        </sql>
+
+        <createTable tableName="Rentals">
+            <column name="rental_id" type="UNIQUEIDENTIFIER" defaultValueComputed="NEWSEQUENTIALID()">
+                <constraints primaryKey="true" primaryKeyName="PK_Rentals" nullable="false"/>
+            </column>
+            <column name="truck_id" type="UNIQUEIDENTIFIER">
+                <constraints nullable="false"
+                             foreignKeyName="FK_Rentals_Trucks"
+                             references="PalletTrucks(truck_id)"/>
+            </column>
+            <column name="start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="DATE"/>
+            <column name="daily_rate" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_cost" type="DECIMAL(10,2)"/>
+            <column name="return_status" type="VARCHAR(255)">
+                <constraints nullable="false"
+                             checkConstraint="return_status IN ('Active', 'Returned', 'Overdue')"
+                             constraintName="CHK_Rentals_ReturnStatus"/>
+            </column>
+        </createTable>
+
         <rollback>
-            <sql>DROP TABLE Rentals;
-            TABLE "Rentals";</sql>
+            <!-- dropTable is enough — it cascades and removes all constraints on the table. -->
+            <dropTable tableName="Rentals"/>
         </rollback>
     </changeSet>
+
 </databaseChangeLog>

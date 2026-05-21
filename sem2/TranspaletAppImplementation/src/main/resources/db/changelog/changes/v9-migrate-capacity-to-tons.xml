@@ -12,17 +12,16 @@
             </not>
         </preConditions>
 
-        <sql>
-            ALTER TABLE PalletTrucks ADD capacity_tons DECIMAL(10, 3) NULL;
-        </sql>
+        <addColumn tableName="PalletTrucks">
+            <column name="capacity_tons" type="DECIMAL(10,3)"/>
+        </addColumn>
 
         <rollback>
-            <sql>ALTER TABLE PalletTrucks DROP COLUMN capacity_tons;</sql>
+            <dropColumn tableName="PalletTrucks" columnName="capacity_tons"/>
         </rollback>
     </changeSet>
 
     <changeSet id="v9-migrate-capacity-kg-to-tons" author="lupse">
-
         <sql>
             UPDATE PalletTrucks
             SET capacity_tons = CAST(capacity_kg AS DECIMAL(10, 3)) / 1000.0
@@ -35,11 +34,14 @@
     </changeSet>
 
     <changeSet id="v9-set-capacity-tons-not-null" author="lupse">
-        <sql>
-            ALTER TABLE PalletTrucks ALTER COLUMN capacity_tons DECIMAL(10, 3) NOT NULL;
-        </sql>
+        <addNotNullConstraint tableName="PalletTrucks"
+                              columnName="capacity_tons"
+                              columnDataType="DECIMAL(10,3)"/>
+
         <rollback>
-            <sql>ALTER TABLE PalletTrucks ALTER COLUMN capacity_tons DECIMAL(10, 3) NULL;</sql>
+            <dropNotNullConstraint tableName="PalletTrucks"
+                                   columnName="capacity_tons"
+                                   columnDataType="DECIMAL(10,3)"/>
         </rollback>
     </changeSet>
 

@@ -10,15 +10,23 @@
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="PalletTrucks" columnName="created_at"/></not>
         </preConditions>
-        <sql>
-            ALTER TABLE PalletTrucks ADD created_at DATETIME2 NOT NULL DEFAULT GETDATE();
-            ALTER TABLE PalletTrucks ADD updated_at DATETIME2 NOT NULL DEFAULT GETDATE();
-        </sql>
+
+        <addColumn tableName="PalletTrucks">
+            <column name="created_at" type="DATETIME2" defaultValueComputed="GETDATE()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME2" defaultValueComputed="GETDATE()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
         <rollback>
-            <sql>
-                ALTER TABLE PalletTrucks DROP COLUMN updated_at;
-                ALTER TABLE PalletTrucks DROP COLUMN created_at;
-            </sql>
+            <dropDefaultValue tableName="PalletTrucks" columnName="updated_at" columnDataType="DATETIME2"/>
+            <dropDefaultValue tableName="PalletTrucks" columnName="created_at" columnDataType="DATETIME2"/>
+            <dropColumn tableName="PalletTrucks">
+                <column name="updated_at"/>
+                <column name="created_at"/>
+            </dropColumn>
         </rollback>
     </changeSet>
 
@@ -26,15 +34,23 @@
         <preConditions onFail="MARK_RAN">
             <not><columnExists tableName="Rentals" columnName="created_at"/></not>
         </preConditions>
-        <sql>
-            ALTER TABLE Rentals ADD created_at DATETIME2 NOT NULL DEFAULT GETDATE();
-            ALTER TABLE Rentals ADD updated_at DATETIME2 NOT NULL DEFAULT GETDATE();
-        </sql>
+
+        <addColumn tableName="Rentals">
+            <column name="created_at" type="DATETIME2" defaultValueComputed="GETDATE()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME2" defaultValueComputed="GETDATE()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
         <rollback>
-            <sql>
-                ALTER TABLE Rentals DROP COLUMN updated_at;
-                ALTER TABLE Rentals DROP COLUMN created_at;
-            </sql>
+            <dropDefaultValue tableName="Rentals" columnName="updated_at" columnDataType="DATETIME2"/>
+            <dropDefaultValue tableName="Rentals" columnName="created_at" columnDataType="DATETIME2"/>
+            <dropColumn tableName="Rentals">
+                <column name="updated_at"/>
+                <column name="created_at"/>
+            </dropColumn>
         </rollback>
     </changeSet>
 
